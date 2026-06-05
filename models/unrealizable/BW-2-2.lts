@@ -1,0 +1,58 @@
+//******************************************************************************
+//Environment
+//******************************************************************************
+const N = 2
+const K = 2
+
+const Teams  = N
+const Steps  = K
+
+range Team   = 0..(Teams-1)
+range Step   = 1..Steps
+
+Team(ID=0) = Arrival,
+  Arrival = (
+  　arriveDocument -> Pending[1] ),
+  Pending[s:Step] = (
+    assign[ID] -> Assigned[s] ),
+  Assigned[s:Step] = (
+    when(s <  Steps) reject[ID][s] -> Pending[s+1] |
+	when(s == Steps) reject[ID][s] -> Judge |
+    accept[ID] -> Judge ),
+  Judge = (
+	refuse  -> Arrival |
+    approve -> Arrival ).
+
+External_Judge(ID=0) = (assign[ID] -> Choice),
+Choice = (
+    reject[ID][Step] -> External_Judge | 
+    accept[ID] -> External_Judge
+).
+
+//******************************************************************************
+//Requirement
+//******************************************************************************
+fluent REFUSE_PROCESS = <reject[Team][Steps],arriveDocument>
+ltl_property CONDITION_REFUSE  = [](REFUSE_PROCESS -> !approve)
+ltl_property CONDITION_APPROVE = [](!REFUSE_PROCESS -> !refuse)
+
+
+ltl_property NOT_SAME_TASK_0 = [](assign[0] -> X(!assign[1] W (accept[0] || reject[0][Steps])))
+ltl_property NOT_SAME_TASK_1 = [](assign[1] -> X(!assign[0] W (accept[1] || reject[1][Steps])))
+
+//******************************************************************************
+//Controller
+//******************************************************************************
+||Plant = (forall [id:Team] Team(id) || forall [id:Team] External_Judge(id)).
+controllerSpec Goal = {
+	safety = 	{
+				CONDITION_REFUSE,
+				CONDITION_APPROVE,
+				NOT_SAME_TASK_0,NOT_SAME_TASK_1
+				}
+	controllable = {/*assign[Team], */refuse, approve}
+	//marking = {refuse, approve}
+	nonblocking
+}
+
+controller ||TraditionalController = (Plant)~{Goal}.

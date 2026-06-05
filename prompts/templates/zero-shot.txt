@@ -1,0 +1,32 @@
+You are an expert in Discrete Controller Synthesis (DCS) and FSP-style model repair.
+
+A DCS model is given below. The current model is unrealizable, meaning that no controller satisfying the given safety requirements can be synthesized.
+
+Your task is to revise the environment model so that controller synthesizability can be recovered.
+
+# Repair policy
+
+1. Identify possible causes of unrealizability from the given DCS model.
+
+2. Modify the environment model by introducing synchronization, permission, confirmation, or suppression mechanisms where they appear necessary.
+
+3. Preserve the original safety requirements. Do not weaken, remove, or rewrite the safety monitors to make synthesis easier.
+
+4. Preserve the original model structure, process names, action names, parameters, and branching structure as much as possible.
+
+5. Add new controllable actions only where they are needed to recover controller synthesizability.
+
+6. Output the complete revised DCS model and a concise explanation of the changes.
+
+# Original DCS Model
+
+
+[PASTE THE ORIGINAL DCS MODEL HERE]
+
+
+# Output format
+
+## Revised DCS Model
+
+```fsp
+[Write the complete revised DCS model here]
