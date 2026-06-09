@@ -2,7 +2,7 @@
 // Environment
 //*****************************************************************************
 
-const N = 4
+const N = 2
 set VisitorAction = {reqEnter_Hall,reqEnter_A,reqOut}
 set LockAction    = {lock_Hall,lock_A,unlock_Hall,unlock_A}
 set AllowAction   = {allow_Hall,allow_A}
