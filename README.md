@@ -1,8 +1,4 @@
-# safety-game-dcs-repair
-
-Artifacts for the paper:
-
-**Safety-Game-Based Additional Control Candidate Suggestion for Repairing Unrealizable Discrete Controller Synthesis Models**
+# Safety-Game-Based Additional Control Candidate Suggestion for Repairing Unrealizable Discrete Controller Synthesis Models
 
 This repository contains the benchmark models and reference models used to
 evaluate a repair-support method for unrealizable Discrete Controller Synthesis
@@ -32,7 +28,7 @@ The evaluation uses five benchmark families:
 | Model | Unrealizable model | Reference model |
 | --- | --- | --- |
 | AT(2,2) | `models/unrealizable/AT-2-2.lts` | `models/reference/AT-2-2-origin.lts` |
-| AG(2,2) | `models/unrealizable/AG-2-2.lts` | `models/reference/AG-2-4-realizable.lts` |
+| AG(2,2) | `models/unrealizable/AG-2-2.lts` | `models/reference/AG-2-2-realizable.lts` |
 | AM(2,5) | `models/unrealizable/AM-2-5.lts` | `models/reference/AM-2-5-origin.lts` |
 | BW(2,2) | `models/unrealizable/BW-2-2.lts` | `models/reference/BW-2-2-origin.lts` |
 | KIVA | `models/unrealizable/KIVA-N-2-robot.lts` | `models/reference/KIVA-N-2-robot-origin.lts` |
@@ -64,18 +60,31 @@ See [`docs/llm_experiment.md`](docs/llm_experiment.md) for details.
 
 ## Reproduction
 
-The models are written in the FSP/LTS notation used by MTSA.
+The models are written in the FSP/LTS notation used by MTSA (Modal Transition
+System Analyzer). The experiments reported in the paper were conducted using a
+modified version of MTSA that implements the proposed Mixed-State detection,
+additional-control candidate generation, intervention, and resynthesis
+procedures.
 
-1. Install MTSA (Modal Transition System Analyzer) from:
-   <https://mtsa.dc.uba.ar/>
+The modified MTSA implementation is available at:
+
+<https://drive.google.com/file/d/13OWOGnleB78oLaWvDHn5dj-BesxPz4dt/view?usp=sharing>
+
+The original MTSA distribution, on which the implementation is based, is
+available at <https://mtsa.dc.uba.ar/>.
+
+To reproduce the experiments:
+
+1. Download and launch the modified MTSA implementation from the link above.
 2. Open one of the `.lts` files under `models/unrealizable/`.
-3. Run controller synthesis for the controller declared at the bottom of the
-   selected file.
-4. Compare the synthesis result with the corresponding file under
-   `models/reference/`.
+3. Run the proposed additional-control suggestion procedure for the controller
+   declared at the bottom of the selected file.
+4. Examine the generated additional-control record and the controller-synthesis
+   result.
+5. Compare the model with the corresponding file under `models/reference/`.
 
-The unrealizable models are expected to fail controller synthesis under the
-specified safety requirements. The reference models are included to make the
+The unrealizable models are expected to fail controller synthesis before the
+proposed procedure is applied. The reference models are included to make the
 intended realizable behavior or original benchmark structure easier to inspect.
 
 ## Expected Results
