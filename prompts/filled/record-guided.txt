@@ -40,12 +40,232 @@ Each entry has the following meaning:
 # Additional Control Record
 
 Lap  | State                | Action                   
-[1]  | Q509Q0Q0             | arrive_Hall.2            
-       --> Available ControllableActions: [lock_Hall, lock_A, permit_Hall]
+[1]  | Q13Q0Q0Q0Q0Q1        | request.1                
+       --> Available ControllableActions: [process.2]
+       --> Environment Origins: [Environment: Q13 --request.1--> Q14]
+
+[2]  | Q136Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [unfilter.2, filter.2]
+       --> Environment Origins: [Environment: Q136 --request.1--> Q137]
+
+[3]  | Q126Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [reject.1.3]
+       --> Environment Origins: [Environment: Q126 --request.2--> Q127]
+
+[4]  | Q523Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [ok.2.1, ng.2.1]
+       --> Environment Origins: [Environment: Q523 --request.1--> Q524]
+
+[5]  | Q34Q0Q0Q0Q0Q1        | request.1                
+       --> Available ControllableActions: [reject.2.3]
+       --> Environment Origins: [Environment: Q34 --request.1--> Q35]
+
+[6]  | Q2Q0Q0Q0Q0Q1         | request.1                
+       --> Available ControllableActions: [ok.2.4, ng.2.4]
+       --> Environment Origins: [Environment: Q2 --request.1--> Q518]
+
+[7]  | Q289Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [reject.2.5]
+       --> Environment Origins: [Environment: Q289 --request.1--> Q290]
+
+[8]  | Q40Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [dataTransfer.1.1]
+       --> Environment Origins: [Environment: Q40 --request.2--> Q41]
+
+[9]  | Q519Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [ok.2.3, ng.2.3]
+       --> Environment Origins: [Environment: Q519 --request.1--> Q520]
+
+[10] | Q191Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [ok.1.3, ng.1.3]
+       --> Environment Origins: [Environment: Q191 --request.2--> Q192]
+
+[11] | Q525Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [ok.2.5, ng.2.5]
+       --> Environment Origins: [Environment: Q525 --request.1--> Q526]
+
+[12] | Q109Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [dataTransfer.2.2]
+       --> Environment Origins: [Environment: Q109 --request.1--> Q110]
+
+[13] | Q342Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [unfilter.2, filter.2]
+       --> Environment Origins: [Environment: Q342 --request.1--> Q343]
+
+[14] | Q516Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [unfilter.2, filter.2]
+       --> Environment Origins: [Environment: Q516 --request.1--> Q517]
+
+[15] | Q308Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [ok.1.2, ng.1.2]
+       --> Environment Origins: [Environment: Q308 --request.2--> Q309]
+
+[16] | Q370Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [unfilter.2, filter.2]
+       --> Environment Origins: [Environment: Q370 --request.1--> Q371]
+
+[17] | Q88Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [ok.1.4, ng.1.4]
+       --> Environment Origins: [Environment: Q88 --request.2--> Q89]
+
+[18] | Q66Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [dataTransfer.1.5]
+       --> Environment Origins: [Environment: Q66 --request.2--> Q67]
+
+[19] | Q3Q0Q0Q0Q0Q1         | request.1                
+       --> Available ControllableActions: [reject.2.4]
+       --> Environment Origins: [Environment: Q3 --request.1--> Q4]
+
+[20] | Q22Q0Q0Q0Q0Q1        | request.1                
+       --> Available ControllableActions: [dataTransfer.2.4]
+       --> Environment Origins: [Environment: Q22 --request.1--> Q23]
+
+[21] | Q27Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [reject.1.4]
+       --> Environment Origins: [Environment: Q27 --request.2--> Q28]
+
+[22] | Q508Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [reject.1.1]
+       --> Environment Origins: [Environment: Q508 --request.2--> Q506]
+
+[23] | Q199Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [unfilter.2, filter.2]
+       --> Environment Origins: [Environment: Q199 --request.1--> Q200]
+
+[24] | Q215Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [reject.1.2]
+       --> Environment Origins: [Environment: Q215 --request.2--> Q216]
+
+[25] | Q16Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [ok.1.5, ng.1.5]
+       --> Environment Origins: [Environment: Q16 --request.2--> Q17]
+
+[26] | Q253Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [unfilter.1, filter.1]
+       --> Environment Origins: [Environment: Q253 --request.2--> Q254]
+
+[27] | Q176Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [reject.2.1]
+       --> Environment Origins: [Environment: Q176 --request.1--> Q177]
+
+[28] | Q444Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [process.1]
+       --> Environment Origins: [Environment: Q444 --request.2--> Q443]
+
+[29] | Q521Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [ok.2.2, ng.2.2]
+       --> Environment Origins: [Environment: Q521 --request.1--> Q522]
+
+[30] | Q231Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [dataTransfer.2.1]
+       --> Environment Origins: [Environment: Q231 --request.1--> Q232]
+
+[31] | Q481Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [unfilter.1, filter.1]
+       --> Environment Origins: [Environment: Q481 --request.2--> Q479]
+
+[32] | Q399Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [dataTransfer.1.3]
+       --> Environment Origins: [Environment: Q399 --request.2--> Q398]
+
+[33] | Q78Q0Q0Q0Q0Q1        | request.1                
+       --> Available ControllableActions: [reject.2.2]
+       --> Environment Origins: [Environment: Q78 --request.1--> Q79]
+
+[34] | Q528Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [select_data.1.2, select_data.1.3, select_data.1.4, select_data.1.5, select_data.1.1]
+       --> Environment Origins: [Environment: Q528 --request.2--> Q527]
+
+[35] | Q425Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [unfilter.1, filter.1]
+       --> Environment Origins: [Environment: Q425 --request.2--> Q424]
+
+[36] | Q320Q0Q0Q0Q0Q1       | request.1                
+       --> Available ControllableActions: [dataTransfer.2.5]
+       --> Environment Origins: [Environment: Q320 --request.1--> Q321]
+
+[37] | Q96Q0Q0Q0Q1Q0        | request.2                
+       --> Available ControllableActions: [dataTransfer.1.4]
+       --> Environment Origins: [Environment: Q96 --request.2--> Q97]
+
+[38] | Q6Q0Q0Q0Q1Q0         | request.2                
+       --> Available ControllableActions: [ok.1.1, ng.1.1]
+       --> Environment Origins: [Environment: Q6 --request.2--> Q7]
+
+[39] | Q367Q0Q0Q0Q1Q0       | request.2                
+       --> Available ControllableActions: [dataTransfer.1.2]
+       --> Environment Origins: [Environment: Q367 --request.2--> Q366]
+
+[40] | Q1Q0Q0Q0Q0Q1         | request.1                
+       --> Available ControllableActions: [select_data.2.5, select_data.2.1, select_data.2.2, select_data.2.3, select_data.2.4]
+       --> Environment Origins: [Environment: Q1 --request.1--> Q527]
 
 # Original DCS Model
 
-[PASTE THE ORIGINAL DCS MODEL HERE]
+//*****************************************************************************
+// Environment
+//*****************************************************************************
+
+/*Set of Object*/
+const N = 2 /* num of user */
+const K = 5 /* num of data (virtual server) */
+
+range SystemID = 1 .. N
+range DataID = 1 .. K
+
+/*Set of Actions*/
+set Authority = {admin, official, general}
+set RequestActions = {request[SystemID]}
+set ControllableActions = {select_data[SystemID][DataID], ok[SystemID][DataID], ng[SystemID][DataID], reject[SystemID][DataID], dataTransfer[SystemID][DataID], filter[SystemID], unfilter[SystemID], process[SystemID]}
+set FinishActions = {process[SystemID], reject[SystemID][DataID]}
+
+/* Environment Transitions */
+System(ID = 1) = REQUEST,
+REQUEST 				= 	(/*check[ID] -> */request[ID] -> DATA_SELECTION),
+DATA_SELECTION			= 	(select_data[ID][data:DataID] -> JUDGEMENT[data]),
+JUDGEMENT[data:DataID]	=	(ok[ID][data] -> OK[data] | ng[ID][data] -> NG[data]),
+NG[data:DataID] 		=	(reject[ID][data] -> REQUEST),
+OK[data:DataID] 		=	FILTERING[data],
+FILTERING[data:DataID] 	=	(filter[ID] -> GET_DATA[data] | unfilter[ID] -> GET_DATA[data]),
+GET_DATA[data:DataID]	=	(dataTransfer[ID][data] -> USE_DATA),
+USE_DATA				=	(process[ID] -> REQUEST).
+//PrivacyFilter = ().
+
+
+//*****************************************************************************
+// Requirement
+//*****************************************************************************
+range Public_Data = 1 .. 1
+
+/*FLTL*/
+ltl_property P_SECURITY_Admin   = [](!reject[1][DataID])
+ltl_property P_SECURITY_OK_02 = [](!{dataTransfer[2][DataID]}\{dataTransfer[2][Public_Data]})
+ltl_property P_SECURITY_NG_02 = [](!reject[2][Public_Data])
+
+ltl_property P_NOT_OTHER_REQUEST_01 = [](request[1] -> X(!request[2] W (process[1] || reject[1][1] || reject[1][2] || reject[1][3] || reject[1][4] || reject[1][5])))
+ltl_property P_NOT_OTHER_REQUEST_02 = [](request[2] -> X(!request[1] W (process[2] || reject[2][1] || reject[2][2] || reject[2][3] || reject[2][4] || reject[2][5])))
+
+controllerSpec Specification =
+{
+	safety       = {
+					P_SECURITY_Admin,
+					P_SECURITY_OK_02,
+					P_SECURITY_NG_02,
+                    P_NOT_OTHER_REQUEST_01,
+                    P_NOT_OTHER_REQUEST_02
+				   }
+	//liveness     = {GOAL}
+	controllable = {ControllableActions}
+}
+
+
+//*****************************************************************************
+//Controller
+//*****************************************************************************
+
+//General Synthesis
+||Environment = (forall [id:SystemID] System(id)).
+controller ||TraditionalController = (Environment)~{Specification}.
 
 # Output format
 

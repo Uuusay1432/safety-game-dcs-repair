@@ -21,7 +21,7 @@ Your task is to revise the environment model so that controller synthesizability
 # Original DCS Model
 
 //******************************************************************************
-// Environment (Repaired)
+// Environment
 //******************************************************************************/
 
 const N = 2
@@ -34,21 +34,38 @@ range Plane  = 0..(Planes-1)
 range Height = 0..(Heights-1)
 
 Airplane(P=0) = (
-    requestLand[P] -> descend[P][h:Height] -> Holding[h] |
+    requestLand[P] -> WAIT_PERMISSION |
     extendFlight[P] -> End),
 
+  WAIT_PERMISSION = (
+    permitDescend[P] ->
+    descend[P][h:Height] -> Holding[h]),
+
   Holding[h:Height] =
-    if (h>0) then (descend[P][h-1] -> Holding[h-1])
-             else (approach[P] -> LANDING[P]),
+    if (h>0) then (
+        descend[P][h-1] -> Holding[h-1])
+    else (
+        approach[P] -> LANDING[P]),
 
-  LANDING[P] = (land[P] -> End),
+  LANDING[P] = (
+    land[P] -> End),
 
-  // repaired: controller must explicitly permit recycle
-  End = (reset[P] -> control.all -> Airplane).
+  End = (
+    control.all -> Airplane).
 
 ResponseMonitor = (
-  requestLand[p:Plane] -> descend[p][Height] -> ResponseMonitor |
-  {extendFlight[Plane], descend[Plane][Height], approach[Plane]} -> ResponseMonitor ).
+    requestLand[p:Plane] ->
+    WAIT_RESPONSE[p]
+    |
+    {extendFlight[Plane],
+     descend[Plane][Height],
+     approach[Plane]} -> ResponseMonitor
+),
+
+WAIT_RESPONSE[p:Plane] = (
+    permitDescend[p] ->
+    descend[p][Height] -> ResponseMonitor
+).
 
 //******************************************************************************
 // Requirement
@@ -58,22 +75,28 @@ fluent PROCESS_REQUESTLAND[p:Plane] =
     <requestLand[p], descend[p][Height]>
 
 ltl_property HeightMonitor_00 =
-    [](descend[0][0] -> X(!descend[Plane][0] W land[0]))
+    [](descend[0][0] ->
+      X(!descend[Plane][0] W land[0]))
 
 ltl_property HeightMonitor_01 =
-    [](descend[0][1] -> X(!descend[Plane][1] W descend[0][Height]))
+    [](descend[0][1] ->
+      X(!descend[Plane][1] W descend[0][Height]))
 
 ltl_property HeightMonitor_10 =
-    [](descend[1][0] -> X(!descend[Plane][0] W land[1]))
+    [](descend[1][0] ->
+      X(!descend[Plane][0] W land[1]))
 
 ltl_property HeightMonitor_11 =
-    [](descend[1][1] -> X(!descend[Plane][1] W descend[1][Height]))
+    [](descend[1][1] ->
+      X(!descend[Plane][1] W descend[1][Height]))
 
 ltl_property RequestMonitor =
-    [](requestLand[Plane] -> X(!requestLand[Plane] W land[Plane]))
+    [](requestLand[Plane] ->
+      X(!requestLand[Plane] W land[Plane]))
 
 ltl_property RampMonitor =
-    [](approach[Plane] -> X(!approach[Plane] W land[Plane]))
+    [](approach[Plane] ->
+      X(!approach[Plane] W land[Plane]))
 
 //******************************************************************************
 // Controller
@@ -89,17 +112,25 @@ controllerSpec Goal = {
         RequestMonitor
     }
     controllable = {
+        permitDescend[Plane],
         descend[Plane][Height],
-        approach[Plane],
-        reset[Plane]
+        approach[Plane]
     }
     nonblocking
 }
 
-||Environment = (forall [p:Plane] Airplane(p) || ResponseMonitor).
-controller ||TraditionalController = (Environment)~{Goal}.
+||Environment = (
+    forall [p:Plane] Airplane(p)
+    || ResponseMonitor
+).
 
+controller ||TraditionalController =
+    (Environment)~{Goal}.
 
+controller ||CController =
+    (forall [p:Plane] Airplane(p)
+     || ResponseMonitor)~{Goal}.
+         
 # Output format
 
 ## Revised DCS Model

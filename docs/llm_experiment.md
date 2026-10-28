@@ -1,52 +1,66 @@
-# LLM Repair Experiment
+# LLMによる環境モデル修正の実験
 
-This directory documents the artifacts used in the LLM-based environment-model
-repair experiment.
+LLMは、提案手法自体ではなく、開発者が記録から修正を具体化する作業の代行として用いる。
+比較するのは人間とLLMではなく、記録を与える条件と与えない条件である。
+RQ1は、記録の有無による合成成功への到達と修正内容の違いを調べる。
 
-## Conditions
+## 再実験と対象
 
-The paper evaluates two prompting conditions:
+AT・AM・AGは、各モデル・各条件で新たに15回ずつ再実験した。
+旧10試行への5試行の追加ではない。旧版の結果とは混ぜない。
+BW・KIVAのZero-shotも各15回実施した。
+実際にLLM修正を行ったのはZero-shot 75試行、Record-guided 45試行の計120試行。
+BW・KIVAのRecord-guidedは記録を生成できず、LLM修正は行っていないが、
+記録生成失敗を各15試行分として計上する。評価の分母は各条件75である。
 
-- Zero-shot: the prompt includes only the current unrealizable DCS model.
-- Record-guided: the prompt includes the current DCS model and an
-  additional-control record generated from the safety-game analysis.
+## 条件と手順
 
-In the source working repository, these conditions were named `noguide` and
-`prop` or `proposal`. In this public artifact repository, they are normalized to
-`zero-shot` and `record-guided`.
+- Zero-shot: 実現不能モデルと修正指示を入力する。
+- Record-guided: 実現不能モデル、追加制御記録と、その具体化を促す説明を入力する。
+- ChatGPTのWebインターフェースで、実験者が記録したモデル名はGPT-5.6 Luna。
+  これは実験時の記録の表記であり、APIのモデルIDを示すものではない。
+- 各試行は新規チャット。メモリ・カスタム指示は使用しない。同一試行の反復は履歴を引き継ぐ。
+- 最大10回。MTSAで制御器を合成できれば成功として終了する。
+  失敗後は構文的に有効な修正モデルを次反復に用いる。出力を手動で修正しない。
+- 修正上限到達と、モデル規模増大によるMTSA処理未完了は未成功として区別する。
+- M4・RAM 16GBのMacBookと改変MTSAを用いた。
+  実験全体の正確な開始・終了日時は保存資料から確定できていない。
+  温度・乱数シードの値や完全に同一の応答は保証しない。
 
-## Prompt Files
+初回・反復時の実際の発言は保存ログの収録範囲に従う。
+応答だけのログに欠けているプロンプトやエラーメッセージは推測して補わない。
 
-Prompt templates:
+## ログ・記録・コードの対応
 
-- `../prompts/templates/zero-shot.txt`
-- `../prompts/templates/record-guided.txt`
+- [全150評価枠の対応表CSV](../results/rq1/trials.csv) / [JSON](../results/rq1/trials.json)
+- [保存された記録の索引](../records/index.json)
+- [反復回数の実験時観測値](../results/rq1/iteration-observations.json)
+- [試行別の静的比較](../analysis/repair-audit/README.md)
 
-Prepared prompt files:
+`llm-responses/{AT,AM,AG}/{zero-shot,record-guided}/run-01.md`〜`run-15.md`、
+`llm-responses/{BW,KIVA}/zero-shot/run-01.md`〜`run-15.md` に原ログを保存する。
+ファイル内容は原ログと同じで、索引にSHA-256を記載する。
+AT・AM・AGの `revisions/` は保存コードの抜粋であり、BW・KIVAの修正コードは原ログ内を参照する。
+抜粋は、実験時の採用モデルとの一致を照合したものではない。
+AM Record-guided 6は部分修正のみ。AG Record-guided 4は入力見出し内のコードと
+修正説明を保存しており、実験時の採用出力との対応には不確実性がある。
 
-- `../prompts/filled/zero-shot.txt`
-- `../prompts/filled/record-guided.txt`
+テンプレートは `prompts/templates/`、準備した入力例は `prompts/filled/`、
+ログに保存されていた入力接頭部は `prompts/captured/` に区別して収録する。
+capturedの接頭部にはモデル本体を含まない場合があり、索引のモデル欄は比較用入力モデルを指す。
+初回入力が未収録の場合、その比較用モデルが実際に同一内容で入力されたかは未確認である。
+後続反復は同一ログを参照し、欠けた発言を新規に再構成していない。
 
-The templates contain placeholders for the original DCS model and, for the
-record-guided condition, the additional-control record.
+## プロンプトの解釈上の注意
 
-## Response Logs
+当時のRecord-guidedプロンプトには、記録を具体化すれば合成可能になる旨や、
+Available ControllableActionsとの同期を促す表現がある。再現資料として原文を保存した。
+本論文の形式的保証は更新後ゲームに対するものであり、任意の環境モデルへの具体化に
+合成成功や機能維持を保証するものではない。記録データと具体化指示の効果を分離した実験でもない。
 
-Raw LLM responses are organized by model, condition, and run:
+## 成功と未成功
 
-```text
-../llm-responses/
-  AT/
-    zero-shot/run-01.md ... run-10.md
-    record-guided/run-01.md ... run-10.md
-  AM/
-    zero-shot/run-01.md ... run-10.md
-    record-guided/run-01.md ... run-10.md
-  AG/
-    zero-shot/run-01.md ... run-10.md
-    record-guided/run-01.md ... run-10.md
-```
-
-These logs preserve the model text and explanations returned by the LLM. They
-are included to support inspection of the repair strategies used in the
-zero-shot and record-guided conditions.
+成功は実験者のMTSA判定に基づく合成成功であり、LLMの自己申告から集計しない。
+BW・KIVAの元集計記号`01`は10回で未成功、`X`はMTSA処理未完了を表し、
+成功に要した整数回数とは区別する。`01`を1回成功と数えない。
+集計と検定は [評価の詳細](paper-supplement/evaluation-details.md) を参照する。

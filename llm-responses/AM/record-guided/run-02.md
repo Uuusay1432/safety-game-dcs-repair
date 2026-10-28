@@ -1,26 +1,21 @@
-## Revised DCS Model
-
-```fsp
+Revised DCS Model
+The repair introduces a controllable permission action, permitRequest[ID], immediately before each uncontrollable request[ID]. This provides the controller with a synchronization point for coordinating requests with the existing controllable actions identified in the Additional Control Record.
 //*****************************************************************************
 // Environment
 //*****************************************************************************
 
-/*Set of Object*/
+/* Set of Object */
 const N = 2 /* num of user */
 const K = 5 /* num of data (virtual server) */
 
 range SystemID = 1 .. N
 range DataID = 1 .. K
 
-/*Set of Actions*/
+/* Set of Actions */
 set Authority = {admin, official, general}
+
 set RequestActions = {request[SystemID]}
 
-/*
- Added controllable permission actions before each request:
-   permit_request[1]
-   permit_request[2]
-*/
 set ControllableActions = {
     select_data[SystemID][DataID],
     ok[SystemID][DataID],
@@ -30,66 +25,83 @@ set ControllableActions = {
     filter[SystemID],
     unfilter[SystemID],
     process[SystemID],
-    permit_request[SystemID]
+    permitRequest[SystemID]
 }
 
-set FinishActions = {process[SystemID], reject[SystemID][DataID]}
+set FinishActions = {
+    process[SystemID],
+    reject[SystemID][DataID]
+}
 
 /* Environment Transitions */
+
 System(ID = 1) = REQUEST,
 
-/*
- request[ID] is now preceded by a new controllable synchronization
- point: permit_request[ID]
-*/
-REQUEST                = (/*check[ID] -> */ permit_request[ID] -> request[ID] -> DATA_SELECTION),
+REQUEST =
+    (permitRequest[ID] -> request[ID] -> DATA_SELECTION),
 
-DATA_SELECTION         = (select_data[ID][data:DataID] -> JUDGEMENT[data]),
+DATA_SELECTION =
+    (select_data[ID][data:DataID] -> JUDGEMENT[data]),
 
-JUDGEMENT[data:DataID] = (ok[ID][data] -> OK[data]
-                        | ng[ID][data] -> NG[data]),
+JUDGEMENT[data:DataID] =
+    (ok[ID][data] -> OK[data]
+    | ng[ID][data] -> NG[data]),
 
-NG[data:DataID]        = (reject[ID][data] -> REQUEST),
+NG[data:DataID] =
+    (reject[ID][data] -> REQUEST),
 
-OK[data:DataID]        = FILTERING[data],
+OK[data:DataID] =
+    FILTERING[data],
 
-FILTERING[data:DataID] = (filter[ID] -> GET_DATA[data]
-                        | unfilter[ID] -> GET_DATA[data]),
+FILTERING[data:DataID] =
+    (filter[ID] -> GET_DATA[data]
+    | unfilter[ID] -> GET_DATA[data]),
 
-GET_DATA[data:DataID]  = (dataTransfer[ID][data] -> USE_DATA),
+GET_DATA[data:DataID] =
+    (dataTransfer[ID][data] -> USE_DATA),
 
-USE_DATA               = (process[ID] -> REQUEST).
+USE_DATA =
+    (process[ID] -> REQUEST).
+
+//PrivacyFilter = ().
 
 
 //*****************************************************************************
 // Requirement
 //*****************************************************************************
+
 range Public_Data = 1 .. 1
 
-/*FLTL*/
-ltl_property P_SECURITY_Admin   = [](!reject[1][DataID])
-ltl_property P_SECURITY_OK_02   = [](!{dataTransfer[2][DataID]}\{dataTransfer[2][Public_Data]})
-ltl_property P_SECURITY_NG_02   = [](!reject[2][Public_Data])
+/* FLTL */
+
+ltl_property P_SECURITY_Admin =
+    [](!reject[1][DataID])
+
+ltl_property P_SECURITY_OK_02 =
+    [](!{dataTransfer[2][DataID]}\{dataTransfer[2][Public_Data]})
+
+ltl_property P_SECURITY_NG_02 =
+    [](!reject[2][Public_Data])
 
 ltl_property P_NOT_OTHER_REQUEST_01 =
     [](request[1] ->
         X(!request[2] W
-          (process[1]
-           || reject[1][1]
-           || reject[1][2]
-           || reject[1][3]
-           || reject[1][4]
-           || reject[1][5])))
+            (process[1] ||
+             reject[1][1] ||
+             reject[1][2] ||
+             reject[1][3] ||
+             reject[1][4] ||
+             reject[1][5])))
 
 ltl_property P_NOT_OTHER_REQUEST_02 =
     [](request[2] ->
         X(!request[1] W
-          (process[2]
-           || reject[2][1]
-           || reject[2][2]
-           || reject[2][3]
-           || reject[2][4]
-           || reject[2][5])))
+            (process[2] ||
+             reject[2][1] ||
+             reject[2][2] ||
+             reject[2][3] ||
+             reject[2][4] ||
+             reject[2][5])))
 
 controllerSpec Specification =
 {
@@ -101,7 +113,7 @@ controllerSpec Specification =
         P_NOT_OTHER_REQUEST_02
     }
 
-    // liveness = {GOAL}
+    //liveness = {GOAL}
 
     controllable = {ControllableActions}
 }
@@ -111,26 +123,27 @@ controllerSpec Specification =
 // Controller
 //*****************************************************************************
 
-//General Synthesis
-||Environment = (forall [id:SystemID] System(id)).
-controller ||TraditionalController = (Environment)~{Specification}.
-```
+// General Synthesis
 
-### Explanation of changes
+||Environment =
+    (forall [id:SystemID] System(id)).
 
-The Additional Control Record shows that every unrealizable state is caused by an uncontrollable `request[i]` occurring too early, and that it must be synchronized with existing controllable decisions (`select_data`, `ok/ng`, `reject`, `dataTransfer`, `filter/unfilter`, `process`).
+controller ||TraditionalController =
+    (Environment)~{Specification}.
 
-To realize this uniformly while preserving the model structure, I inserted **one new controllable action** before each request:
 
-* `permit_request[1]`
-* `permit_request[2]`
-
-and changed:
-
-* `request[ID] -> DATA_SELECTION`
-
-to:
-
-* `permit_request[ID] -> request[ID] -> DATA_SELECTION`
-
-This creates an explicit controller-controlled permission point before every uncontrollable request, exactly matching the repair intent of the Additional Control Record, while leaving all original safety properties and existing behavior unchanged.
+Explanation of Changes
+1. Added controllable permission actions: Introduced permitRequest[1] and permitRequest[2] through the parameterized action permitRequest[SystemID].
+2. Modified request transitions: The original transition
+   REQUEST = (request[ID] -> DATA_SELECTION)
+   
+   
+   becomes
+   REQUEST = (permitRequest[ID] -> request[ID] -> DATA_SELECTION)
+   
+   
+   The uncontrollable request remains unchanged, but the controller now has an opportunity to authorize it.
+3. Addressed the 40 record entries: All entries concern either request.1 or request.2. The new permission actions cover both request types, including repeated visits to REQUEST following process or reject.
+4. Preserved the safety requirements: All five original safety properties remain unchanged. The existing selection, judgment, filtering, transfer, and processing transitions are also preserved.
+5. Kept the repair minimal: Only two new controllable action instances are introduced, without changing the original process structure.
+Verification limitation: This is a compact, request-level repair rather than a state-specific realization of all 40 synchronization relationships. The Additional Control Record identifies different controllable actions at different game states, and this model does not explicitly encode each of those relationships. Consequently, recovery of controller synthesizability is not yet verified. A synthesis run is required to establish whether this generalized permission mechanism is sufficient.
